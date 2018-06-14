@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            <img [src]="homeIcon" />
+            <span style="margin-left:10px">Lights</span>
+        </ion-title>
+        <ion-buttons start>
+            <button ion-button icon-only (click)="refreshState()">
+                <ion-icon name="refresh" [ngStyle]="refreshStyle()"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <div *ngIf="errorMessage">{{errorMessage}}</div>
+    <div *ngIf="!loaded" style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em">
+        Loading...
+    </div>
+    <div *ngIf="loaded">
+        <ion-list>
+            <ion-item *ngFor="let bulb of bulbNames()">
+                <ion-label (click)="info(bulb)">{{cap(bulb)}} {{bulbs[bulb].on}}</ion-label>
+                <ion-toggle [ngModel]="bulbs[bulb]" (ngModelChange)="toggle(bulb, $event)"></ion-toggle>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

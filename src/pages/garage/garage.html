@@ -1,0 +1,43 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            <img [src]="homeIcon" />
+            <span style="margin-left: 10px">Garage</span>
+        </ion-title>
+        <ion-buttons start>
+            <button ion-button icon-only (click)="refreshState()">
+                <ion-icon name="refresh" [ngStyle]="refreshStyle()"></ion-icon>
+                <!-- <img style="opacity:0.4" src="refresh.png" /> -->
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list-header>
+    {{stateText()}}
+    <div *ngIf="errorMessage">{{errorMessage}}</div>
+  </ion-list-header>
+  <ion-list *ngIf="!isOpen()">
+    <ion-item>
+      <ion-range snaps="true" step="1" min="1" max="31" [(ngModel)]="openMins">
+        <ion-label range-left>1</ion-label>
+        <ion-label range-right>&infin;</ion-label>
+      </ion-range>
+    </ion-item>
+    <ion-item>
+      <button ion-button full large (click)="openGarage()">{{openForText()}}</button>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="isOpen()">
+    <ion-item>
+      <button ion-button full large (click)="closeGarage()">Close</button>
+    </ion-item>
+  </ion-list>
+  
+  <ion-content text-center>
+      <img src="{{snapUrl}}" (click)="refreshSnapUrl()"/>
+  </ion-content>
+</ion-content>
