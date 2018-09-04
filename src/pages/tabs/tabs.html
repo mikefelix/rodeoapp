@@ -1,6 +1,7 @@
 <ion-tabs>
-  <ion-tab [root]="tab1Root" tabTitle="Lights" tabIcon="bulb"></ion-tab>
-  <ion-tab [root]="tab2Root" tabTitle="Garage" tabIcon="car"></ion-tab>
-  <ion-tab [root]="tab3Root" tabTitle="Weather" tabIcon="sunny"></ion-tab>
-  <ion-tab [root]="tab4Root" tabTitle="History" tabIcon="book"></ion-tab>
+  <ion-tab [root]="tab1Root" tabTitle="Lights" tabIcon="bulb" (ionSelect)="changeTab()"></ion-tab>
+  <ion-tab [root]="tab2Root" tabTitle="Garage" tabIcon="car" (ionSelect)="changeTab()"></ion-tab>
+  <ion-tab [root]="tab3Root" tabTitle="Weather" tabIcon="sunny" (ionSelect)="changeTab()"></ion-tab>
+  <ion-tab [root]="tab4Root" tabTitle="Alarm" tabIcon="alarm" (ionSelect)="changeTab()"></ion-tab>
+  <ion-tab [root]="tab5Root" tabTitle="History" tabIcon="book" (ionSelect)="changeTab()"></ion-tab>
 </ion-tabs>

@@ -9,9 +9,10 @@ import { BehaviorSubject } from 'rxjs';
 import { Current } from '../models/Current';
 import { Forecast } from '../models/Forecast';
 import { History } from '../models/History';
+import { Times } from '../models/Times';
 
 @Injectable()
-export class Weather {  
+export class WeatherProvider {  
   private currentUrl = 'https://mozzarelly.com/weather/current';
   private forecast1Url = 'https://mozzarelly.com/weather/forecast1';
   private forecast2Url = 'https://mozzarelly.com/weather/forecast2';
@@ -21,7 +22,7 @@ export class Weather {
   forecast1Subject = new BehaviorSubject<Forecast>(new Forecast());
   forecast2Subject = new BehaviorSubject<Forecast>(new Forecast());
   historySubject = new BehaviorSubject<History>(new History());
-
+  
   constructor(public http: HttpClient) { 
     this.refresh();
   }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { House } from '../../providers/house';
 import { HouseState } from '../../models/HouseState';
+import { ThermProvider } from '../../providers/therm';
 
 @IonicPage()
 @Component({
@@ -14,11 +15,15 @@ export class HistoryPage implements OnInit {
   loaded = false;
   homeIcon: string;
 
-  constructor(private house: House) {
+  constructor(private house: House, private therm: ThermProvider) {
   }
 
   ngOnInit() {
     this.house.subject.subscribe(this.reflectState.bind(this));
+  }
+
+  ionSelected(){
+    this.therm.refresh();
   }
 
   historyText(){

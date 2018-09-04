@@ -4,8 +4,8 @@ import { House } from "../../providers/house";
 import { AlertController, IonicPage } from 'ionic-angular';
 import { Garage } from '../../models/Garage';
 import { Times } from '../../models/Times';
-import { GarageDoor } from '../../providers/garagedoor';
-import { Therm } from '../../providers/therm';
+import { GarageProvider } from '../../providers/garage';
+import { ThermProvider } from '../../providers/therm';
 
 @IonicPage()
 @Component({
@@ -21,7 +21,7 @@ export class GaragePage implements OnInit {
 
   private snapUrl = 'https://mozzarelly.com/snap?user=mozzarelly&pwd=4h1K4o7pPoZ2&rnd=' + (new Date().getTime());
 
-  constructor(public garageDoor: GarageDoor, public therm: Therm, public alertCtrl: AlertController) {
+  constructor(public garageDoor: GarageProvider, public therm: ThermProvider, public alertCtrl: AlertController) {
   }
 
   ngOnInit() {
@@ -30,7 +30,11 @@ export class GaragePage implements OnInit {
       this.loading = false;
     });
 
-    this.therm.subject.subscribe(therm => `assets/img/${therm.away ? 'homezzz' : 'home'}.png`);
+    this.therm.subject.subscribe(therm => this.homeIcon = `assets/img/${therm.away ? 'homezzz' : 'home'}.png`);
+  }
+
+  ionSelected(){
+    this.therm.refresh();
   }
 
   refreshStyle(){
@@ -69,9 +73,16 @@ export class GaragePage implements OnInit {
     }
     else {
       let text = 'The garage is ' + (this.garage.is_open ? 'open' : 'closed') + '.';
-      if (this.garage.next_close_time && this.garage.current_time){
-        let timeUntilClose = Math.floor((new Date(this.garage.next_close_time).getTime() - new Date(this.garage.current_time).getTime()) / 1000);
+/*      if (this.garage.next_close_time && this.garage.current_time){
+        let nextClose = new Date(this.garage.next_close_time).getTime();
+        let current = new Date(this.garage.current_time).getTime();
+        let timeUntilClose = Math.floor(nextClose - current) / 1000;
         text += ' Closing in ' + timeUntilClose + ' seconds.';
+      }
+*/
+      if (this.garage.next_close_time){
+        let time = this.garage.next_close_time.replace(/"/, '').replace(/^.*, /, '');
+        text += ` Closing at ${time}.`;
       }
 
       return text;
@@ -124,5 +135,6 @@ export class GaragePage implements OnInit {
   refreshState(){
     this.refreshSnapUrl();
     this.garageDoor.refresh();
+    this.therm.refresh();
   }
 }

@@ -4,6 +4,8 @@ export class Thermostat {
     humidity: number;
     state: string;
     mode: string;
+    on: boolean;
+    target: number;
 
     constructor(){  
     }

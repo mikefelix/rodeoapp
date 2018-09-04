@@ -3,8 +3,9 @@ import { HouseState } from "../../models/HouseState";
 import { AlertController, IonicPage } from 'ionic-angular';
 import { House } from '../../providers/house';
 import { Bulbs } from '../../models/Bulbs';
-import { Lights } from '../../providers/lights';
-import { Therm } from '../../providers/therm';
+import { LightsProvider } from '../../providers/lights';
+import { ThermProvider } from '../../providers/therm';
+import { SchedulesProvider } from '../../providers/schedules';
 
 @IonicPage()
 @Component({
@@ -23,33 +24,41 @@ export class LightsPage implements OnInit {
   onIcon = 'build/toggle-filled.png';
   offIcon = 'build/toggle.png';
   
-  constructor(public lights: Lights, public therm: Therm, public alertCtrl: AlertController) {
+  constructor(public lights: LightsProvider, public therm: ThermProvider, public sched: SchedulesProvider, public alertCtrl: AlertController) {
   }
 
   ngOnInit():void {
     this.lights.subject.subscribe(bulbs => {
       this.bulbs = bulbs;
       this.loading = false;
+      this.loaded = true;
     });
 
+    this.sched.subject.subscribe(sc => this.schedules = sc);
     this.therm.subject.subscribe(therm => this.homeIcon = `assets/img/${therm.away ? 'homezzz' : 'home'}.png`);
   }
    
+  ionSelected(){
+    this.therm.refresh();
+  }
+
   toggle(bulb, ev) {
-    if (this.bulbs[bulb]){
-      this.lights.lightOff(bulb);
+    this.lights[bulb].on = !this.lights[bulb].on;
+
+    if (this.bulbs[bulb].on){
+      this.lights.lightOn(bulb);
     }
     else {
-      this.lights.lightOn(bulb);
+      this.lights.lightOff(bulb);
     }
   }
   
   isOn(bulb){
-    return this.bulbs && this.bulbs[bulb];
+    return this.bulbs && this.bulbs[bulb].on;
   }
 
   isOff(bulb){
-    return !this.bulbs || !this.bulbs[bulb];
+    return !this.bulbs || !this.bulbs[bulb].on;
   }
 
   bulbNames(){
@@ -82,7 +91,7 @@ export class LightsPage implements OnInit {
     let schedText = '';
     for (let s in schedules){
         schedText += `${this.cap(s)} time: ${schedules[s].spec}`;
-        if (schedules[s].spec.match(/[a-z]+/))
+        if (schedules[s].spec.match(/[a-z]+/) && schedules[s].date)
           schedText += ` (${schedules[s].date.replace(/^.*, ?/, '')})`;
 
         schedText += '<br/>';
@@ -91,7 +100,26 @@ export class LightsPage implements OnInit {
     this.alertCtrl.create({
       title: this.cap(bulb),
       subTitle: schedText,
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'Force on', 
+          handler: data => {
+            console.log(`Force ${bulb} on.`);
+            this.lights.lightOn(bulb, true);
+          }
+        },
+        {
+          text: 'Force off', 
+          handler: data => {
+            console.log(`Force ${bulb} off.`);
+            this.lights.lightOff(bulb, true);
+          }
+        },
+        {
+          text:'Run schedule',
+          role: 'cancel'
+        }
+    ]
     }).present();
   }
   

@@ -1,12 +1,15 @@
+import { Bulb } from "./Bulb";
+
 export class Bulbs {
-    breezeway: boolean;
-    garage: boolean;
-    lamp: boolean;
-    aquarium: boolean;
-    driveway: boolean;
-    outside: boolean;
-    coffee: boolean;
-    fan: boolean
+    breezeway: Bulb;
+    garage: Bulb;
+    lamp: Bulb;
+    aquarium: Bulb;
+    driveway: Bulb;
+    outside: Bulb;
+    coffee: Bulb;
+    fan: Bulb;
+    vent: Bulb;
  
     constructor(){  
     }

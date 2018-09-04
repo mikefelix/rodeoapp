@@ -20,8 +20,8 @@
     <div *ngIf="loaded">
         <ion-list>
             <ion-item *ngFor="let bulb of bulbNames()">
-                <ion-label (click)="info(bulb)">{{cap(bulb)}} {{bulbs[bulb].on}}</ion-label>
-                <ion-toggle [ngModel]="bulbs[bulb]" (ngModelChange)="toggle(bulb, $event)"></ion-toggle>
+                <ion-label (click)="info(bulb)">{{cap(bulb)}}</ion-label>
+                <ion-toggle [ngModel]="bulbs[bulb].on" (ngModelChange)="toggle(bulb, $event)"></ion-toggle>
             </ion-item>
         </ion-list>
     </div>

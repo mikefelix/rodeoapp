@@ -55,10 +55,10 @@
         </ion-row>
         <ion-row>
           <ion-col width-50>
-            <div style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em" (click)="turnOnTherm()">{{therm.state}}</div>
+            <div style="text-align:center;margin-top:50px;font-size:3em" (click)="turnOnTherm()">{{insideState()}}</div>
           </ion-col>
           <ion-col width-50>
-            <div class="current" style="font-size:3em; margin:20px">{{therm.temp}}°<br/>{{therm.humidity}}%</div>
+            <div class="current" style="font-size:3em; margin:20px">{{thermostat.temp}}°<br/>{{thermostat.humidity}}%</div>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -71,7 +71,7 @@
           <div style="float:left">
               <img [src]="image(forecast1.cond)" style="max-width: 50%" /><br/>
           </div>
-          <div class="cast">{{forecast1.cast}}</div>
+          <div class="cast">{{forecast1.cast}} {{sunTime(forecast1)}}</div>
       </div>
 
       <div style="margin-top:50px;clear:both"></div>
@@ -82,18 +82,7 @@
           <div style="float:left">
             <img [src]="image(forecast2.cond)" style="max-width: 50%" /><br/>
           </div>
-          <div class="cast">{{forecast2.cast}}</div>
-      </div>
-
-      <div style="margin-top:50px;clear:both"></div>
-
-      <div style="font-size:1.5em; margin:20px">Sunlight:</div>
-
-      <div class="section forecast" style="margin:20px">
-          <div style="float:left">
-              <img style="max-width: 50%" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAMCAQAAAAD3rGOAAAAJUlEQVR42u3PMQEAAAwCoNm/9Er4CQ3IjYmwsLCwsLCwsLBwxwNUugANifgk/QAAAABJRU5ErkJggg==" /><br/>
-          </div>
-          <div class="cast">{{times.sunrise}} to {{times.sunset}}</div>
+          <div class="cast">{{forecast2.cast}} {{sunTime(forecast2)}}</div>
       </div>
 
   </ion-list>

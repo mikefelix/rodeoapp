@@ -1,0 +1,24 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            <img [src]="homeIcon" />
+            <span style="margin-left:10px">History</span>
+        </ion-title>
+        <ion-buttons start>
+            <button ion-button icon-only (click)="refreshState()">
+                <ion-icon name="refresh"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="errorMessage">{{''}}</div>
+  <span *ngIf="!loaded">
+      Loading...
+  </span>
+  <div *ngIf="loaded">
+    <div>The alarm is {{ringingText()}}.</div>
+    <div>Alarm setting: {{time}}.</div>
+  </div>
+</ion-content>

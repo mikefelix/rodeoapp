@@ -8,7 +8,7 @@ import 'rxjs/add/observable/throw'
 import { Thermostat } from '../models/Thermostat';
 
 @Injectable()
-export class Therm {
+export class ThermProvider {
   private thermUrl = 'https://mozzarelly.com/home/state/thermostat';
 
   openMins = 5;

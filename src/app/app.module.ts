@@ -10,32 +10,21 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { Items } from '../mocks/providers/items';
-import { Settings } from '../providers/providers';
-import { User } from '../providers/providers';
-import { Api } from '../providers/providers';
+import { User } from '../providers/user/user';
+import { Api } from '../providers/api/api';
 import { MyApp } from './app.component';
-import { House } from '../providers/house';
-import { Weather } from '../providers/weather';
+import { WeatherProvider } from '../providers/weather';
+import { ThermProvider } from '../providers/therm';
+import { LightsProvider } from '../providers/lights';
+import { GarageProvider } from '../providers/garage';
+import { AlarmProvider } from '../providers/alarm';
+import { TimesProvider } from '../providers/times';
+import { SchedulesProvider } from '../providers/schedules';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
-
-export function provideSettings(storage: Storage) {
-  /**
-   * The Settings provider takes a set of default settings for your app.
-   *
-   * You can add new settings options at any time. Once the settings are saved,
-   * these values will not overwrite the saved values (this can be done manually if desired).
-   */
-  return new Settings(storage, {
-    option1: true,
-    option2: 'Ionitron J. Framework',
-    option3: '3',
-    option4: 'Hello'
-  });
 }
 
 @NgModule({
@@ -63,12 +52,16 @@ export function provideSettings(storage: Storage) {
     Api,
     Items,
     User,
-    House,
-    Weather,
+    TimesProvider,
+    WeatherProvider,
+    GarageProvider,
+    LightsProvider,
+    ThermProvider,
+    AlarmProvider,
+    SchedulesProvider,
     Camera,
     SplashScreen,
     StatusBar,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
