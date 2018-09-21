@@ -23,7 +23,8 @@ export class LightsPage implements OnInit {
 
   onIcon = 'build/toggle-filled.png';
   offIcon = 'build/toggle.png';
-  
+  poo = true
+
   constructor(public lights: LightsProvider, public therm: ThermProvider, public sched: SchedulesProvider, public alertCtrl: AlertController) {
   }
 
@@ -36,14 +37,17 @@ export class LightsPage implements OnInit {
 
     this.sched.subject.subscribe(sc => this.schedules = sc);
     this.therm.subject.subscribe(therm => this.homeIcon = `assets/img/${therm.away ? 'homezzz' : 'home'}.png`);
+    this.loaded = false;
   }
    
   ionSelected(){
-    this.therm.refresh();
+    this.refreshState();
   }
 
   toggle(bulb, ev) {
-    this.lights[bulb].on = !this.lights[bulb].on;
+    if (!this.bulbs[bulb]) return;
+
+    this.bulbs[bulb].on = !this.bulbs[bulb].on;
 
     if (this.bulbs[bulb].on){
       this.lights.lightOn(bulb);
@@ -54,15 +58,15 @@ export class LightsPage implements OnInit {
   }
   
   isOn(bulb){
-    return this.bulbs && this.bulbs[bulb].on;
+    return this.bulbs && this.bulbs[bulb] && this.bulbs[bulb].on;
   }
 
   isOff(bulb){
-    return !this.bulbs || !this.bulbs[bulb].on;
+    return !this.bulbs || !this.bulbs[bulb] || !this.bulbs[bulb].on;
   }
 
   bulbNames(){
-    return Object.keys(this.bulbs || []).filter(name => name != 'history' && name != 'breezeway' && name != 'garage').sort();
+    return Object.keys(this.bulbs || []).filter(name => this.bulbs[name] && name != 'history' && name != 'breezeway' && name != 'garage').sort();
   }
 
   refreshStyle(){

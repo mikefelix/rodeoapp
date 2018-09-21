@@ -23,7 +23,7 @@ export class HistoryPage implements OnInit {
   }
 
   ionSelected(){
-    this.therm.refresh();
+    this.refreshState();
   }
 
   historyText(){
@@ -36,4 +36,7 @@ export class HistoryPage implements OnInit {
     this.loaded = true;
   }
 
+  refreshState(){
+    this.therm.refresh();
+  }
 }

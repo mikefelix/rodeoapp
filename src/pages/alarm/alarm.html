@@ -2,7 +2,7 @@
     <ion-navbar>
         <ion-title>
             <img [src]="homeIcon" />
-            <span style="margin-left:10px">History</span>
+            <span style="margin-left:10px">Alarm</span>
         </ion-title>
         <ion-buttons start>
             <button ion-button icon-only (click)="refreshState()">
@@ -13,12 +13,111 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="errorMessage">{{''}}</div>
-  <span *ngIf="!loaded">
-      Loading...
-  </span>
-  <div *ngIf="loaded">
-    <div>The alarm is {{ringingText()}}.</div>
-    <div>Alarm setting: {{time}}.</div>
-  </div>
+    <div *ngIf="!loaded" style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em">
+        Loading...
+    </div>
+    <div *ngIf="loaded">    
+        <div padding>{{alarmText()}}</div>
+        <div *ngIf="errorMessage">{{errorMessage}}</div>
+
+        <ion-segment [(ngModel)]="setting">
+            <ion-segment-button value="enabled">Power</ion-segment-button>
+            <ion-segment-button value="time">Setting</ion-segment-button>
+            <ion-segment-button value="sleep">Override</ion-segment-button>
+        </ion-segment>
+
+        <div [ngSwitch]="setting">                
+            <ion-list *ngSwitchCase="'enabled'">
+                <ion-item>
+                    <ion-label style="font-style:italic">Weekdays</ion-label>
+                    <ion-toggle [(ngModel)]="weekdaysEnabled" (ionChange)="toggleEnabled(-2)"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="font-style:italic">Weekends</ion-label>
+                    <ion-toggle [(ngModel)]="weekendsEnabled" (ionChange)="toggleEnabled(-1)"></ion-toggle>
+                </ion-item>
+                <ion-item style="border-top:1px solid black">
+                    <ion-label>Sunday</ion-label>
+                    <ion-toggle [(ngModel)]="alarm.enabled[0]" (ionChange)="toggleEnabled(0)"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Monday</ion-label>
+                    <ion-toggle [(ngModel)]="alarm.enabled[1]" (ionChange)="toggleEnabled(1)"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Tuesday</ion-label>
+                    <ion-toggle [(ngModel)]="alarm.enabled[2]" (ionChange)="toggleEnabled(2)"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Wednesday</ion-label>
+                    <ion-toggle [(ngModel)]="alarm.enabled[3]" (ionChange)="toggleEnabled(3)"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Thursday</ion-label>
+                    <ion-toggle [(ngModel)]="alarm.enabled[4]" (ionChange)="toggleEnabled(4)"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Friday</ion-label>
+                    <ion-toggle [(ngModel)]="alarm.enabled[5]" (ionChange)="toggleEnabled(5)"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Saturday</ion-label>
+                    <ion-toggle [(ngModel)]="alarm.enabled[6]" (ionChange)="toggleEnabled(6)"></ion-toggle>
+                </ion-item>
+            </ion-list>
+
+            <ion-list *ngSwitchCase="'time'">
+                <ion-item>
+                    <ion-label style="color:black;font-style:italic">Weekdays</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="weekdayTime" (ionChange)="changeTime(-2)"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="color:black;font-style:italic">Weekends</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="weekendTime" (ionChange)="changeTime(-1)"></ion-datetime>
+                </ion-item>
+                <ion-item style="border-top:1px solid black">
+                    <ion-label style="color:black">Sunday</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[0]" (ionChange)="changeTime(0)"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="color:black">Monday</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[1]" (ionChange)="changeTime(1)"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="color:black">Tuesday</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[2]" (ionChange)="changeTime(2)"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="color:black">Wednesday</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[3]" (ionChange)="changeTime(3)"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="color:black">Thursday</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[4]" (ionChange)="changeTime(4)"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="color:black">Friday</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[5]" (ionChange)="changeTime(5)"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <ion-label style="color:black">Saturday</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[6]" (ionChange)="changeTime(6)"></ion-datetime>
+                </ion-item>
+            </ion-list>            
+
+            <ion-list *ngSwitchCase="'sleep'">
+                <ion-item>
+                    <ion-label style="color:black">Override next alarm</ion-label>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.time" (ionChange)="override()"></ion-datetime>
+                </ion-item>
+                <ion-item style="border-top:1px solid black">
+                    <ion-label style="color:black">Disable alarms for {{sleepDays}} days.</ion-label>
+                    <ion-range snaps="true" step="1" min="0" max="14" [(ngModel)]="sleepDays" (ionChange)="sleep()">
+                        <ion-label range-left>0</ion-label>
+                        <ion-label range-right>14</ion-label>
+                    </ion-range>
+                </ion-item>
+            </ion-list>
+        </div>
+    </div>
 </ion-content>

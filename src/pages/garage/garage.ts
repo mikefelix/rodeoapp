@@ -19,7 +19,8 @@ export class GaragePage implements OnInit {
   openMins = 5;
   homeIcon: string;
 
-  private snapUrl = 'https://mozzarelly.com/snap?user=mozzarelly&pwd=4h1K4o7pPoZ2&rnd=' + (new Date().getTime());
+  private snapUrl = 'https://mozzarelly.com/video?user=mozzarelly&pwd=4h1K4o7pPoZ2&rnd=' + (new Date().getTime());
+  // private snapUrl = 'https://mozzarelly.com/snap?user=mozzarelly&pwd=4h1K4o7pPoZ2&rnd=' + (new Date().getTime());
 
   constructor(public garageDoor: GarageProvider, public therm: ThermProvider, public alertCtrl: AlertController) {
   }
@@ -34,7 +35,7 @@ export class GaragePage implements OnInit {
   }
 
   ionSelected(){
-    this.therm.refresh();
+    this.refreshState();
   }
 
   refreshStyle(){

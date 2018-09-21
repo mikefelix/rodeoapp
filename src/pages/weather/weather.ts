@@ -100,7 +100,7 @@ export class WeatherPage implements OnInit {
   }
 
   ionSelected(){
-    this.therm.refresh();
+    this.refreshState();
   }
 
 }
