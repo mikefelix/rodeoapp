@@ -1,24 +1,23 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Camera } from '@ionic-native/camera';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
-import { IonicStorageModule, Storage } from '@ionic/storage';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { IonicStorageModule } from '@ionic/storage';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { Items } from '../mocks/providers/items';
-import { User } from '../providers/user/user';
-import { Api } from '../providers/api/api';
 import { MyApp } from './app.component';
-import { WeatherProvider } from '../providers/weather';
+import { CurrentWeatherProvider } from '../providers/current';
+import { Forecast1Provider } from '../providers/forecast1';
+import { Forecast2Provider } from '../providers/forecast2';
+import { HistoricalWeatherProvider } from '../providers/historical';
 import { ThermProvider } from '../providers/therm';
-import { LightsProvider } from '../providers/lights';
+import { DevicesProvider } from '../providers/devices';
 import { GarageProvider } from '../providers/garage';
 import { AlarmProvider } from '../providers/alarm';
 import { TimesProvider } from '../providers/times';
+import { BeerProvider } from '../providers/beer';
 import { SchedulesProvider } from '../providers/schedules';
 
 // The translate loader needs to know where to load i18n files
@@ -34,13 +33,13 @@ export function createTranslateLoader(http: HttpClient) {
   imports: [
     BrowserModule,
     HttpClientModule,
-    TranslateModule.forRoot({
+    /*TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: (createTranslateLoader),
         deps: [HttpClient]
       }
-    }),
+    }),*/
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot()
   ],
@@ -49,17 +48,21 @@ export function createTranslateLoader(http: HttpClient) {
     MyApp
   ],
   providers: [
-    Api,
+    /*Api,
+    Camera,
     Items,
-    User,
+    User,*/
     TimesProvider,
-    WeatherProvider,
+    CurrentWeatherProvider,
+    Forecast1Provider,
+    Forecast2Provider,
+    HistoricalWeatherProvider,
     GarageProvider,
-    LightsProvider,
+    DevicesProvider,
     ThermProvider,
     AlarmProvider,
+    BeerProvider,
     SchedulesProvider,
-    Camera,
     SplashScreen,
     StatusBar,
     // Keep this to enable Ionic's runtime error handling during development

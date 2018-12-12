@@ -1,42 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { House } from '../../providers/house';
-import { HouseState } from '../../models/HouseState';
+import { Provider } from '../../providers/provider';
 import { ThermProvider } from '../../providers/therm';
+import { HistoryProvider } from '../../providers/history';
 
 @IonicPage()
 @Component({
   selector: 'page-history',
   templateUrl: 'history.html'
 })
-export class HistoryPage implements OnInit {
+export class HistoryPage {
   history: {};
   errorMessage: string;
   loaded = false;
   homeIcon: string;
 
-  constructor(private house: House, private therm: ThermProvider) {
-  }
-
-  ngOnInit() {
-    this.house.subject.subscribe(this.reflectState.bind(this));
-  }
-
-  ionSelected(){
-    this.refreshState();
+  constructor(private provider: HistoryProvider, private therm: ThermProvider) {
   }
 
   historyText(){
     JSON.stringify(this.history);
   }
 
-  reflectState(data: HouseState){
-    this.history = data.history;
-    this.homeIcon = `assets/img/${data.thermostat.away ? 'homezzz' : 'home'}.png`;
-    this.loaded = true;
-  }
-
-  refreshState(){
-    this.therm.refresh();
-  }
 }

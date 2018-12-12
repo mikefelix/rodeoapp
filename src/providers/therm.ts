@@ -1,43 +1,25 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/mergeMap'
-import 'rxjs/add/operator/catch'
-import 'rxjs/add/observable/throw'
+import { Injectable, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Thermostat } from '../models/Thermostat';
+import { Provider } from './provider';
 
 @Injectable()
-export class ThermProvider {
-  private thermUrl = 'https://mozzarelly.com/home/state/thermostat';
+export class ThermProvider extends Provider<Thermostat> implements OnInit {
+  dataTypeName = "thermostat";
+  defaultValue = new Thermostat();
+  urls = {state: 'https://mozzarelly.com/home/state/thermostat'};
 
-  openMins = 5;
-  
-  subject = new BehaviorSubject<Thermostat>(new Thermostat());
-
-  constructor(private http: HttpClient){
-    this.refresh();
+  constructor(public http: HttpClient){
+    super(http);
   }
 
   turnOnTherm(){
-    this.http.post(this.thermUrl, '')
-      .catch(this.handleError)
-      .subscribe(data => this.refresh());
+    this.post('state');
   }
 
-  refresh() {
-    console.log('refreshing');
-    this.http.get(this.thermUrl)
-      .catch(this.handleError)
-      .subscribe(data => this.subject.next(data as Thermostat));
+
+  ngOnInit() {
+    console.log('initting therm')
+    this.refresh();
   }
-
-  handleError(error: Response | any){
-    console.error('ThermProvider error:');
-    if (typeof error == 'object')
-      console.log(JSON.stringify(error));
-
-    return Observable.throw(error);
-  }
-
 }

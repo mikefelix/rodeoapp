@@ -1,6 +1,6 @@
 export class Garage {
 
-    is_open: boolean;
+    is_open: boolean = false;
     keep_open: boolean;
     last_open_time: string;
     last_close_time: string;

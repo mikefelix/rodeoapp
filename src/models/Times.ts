@@ -1,10 +1,17 @@
 export class Times {
-    current: string;
-    isNight: false;
-    sunrise: string;
-    sunset: string;
-    dayReset: string;
+    times: {
+        current: string;
+        isNight: false;
+        sunrise: string;
+        sunset: string;
+        dayReset: string;
+    }
  
+    schedules: {
+        schedules: {};
+        ranges: {};
+    }
+
     constructor(){  
     }
 

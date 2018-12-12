@@ -1,54 +1,53 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { Current } from "../../models/Current";
 import { Forecast } from "../../models/Forecast";
 import { History } from "../../models/History";
-import { House } from '../../providers/house';
-import { WeatherProvider } from '../../providers/weather';
 import { Times } from '../../models/Times';
-import { HouseState } from '../../models/HouseState';
 import { Thermostat } from '../../models/Thermostat';
 import { ThermProvider } from '../../providers/therm';
 import { TimesProvider } from '../../providers/times';
+import { RodeoPage } from '../rodeoPage';
+import { CurrentWeatherProvider } from '../../providers/current';
+import { Forecast1Provider } from '../../providers/forecast1';
+import { Forecast2Provider } from '../../providers/forecast2';
+import { HistoricalWeatherProvider } from '../../providers/historical';
 
 @IonicPage()
 @Component({
   selector: 'page-weather',
   templateUrl: 'weather.html'
 })
-export class WeatherPage implements OnInit {
-  selectedSegment: string = 'current';
-  errorMessage: string;
-  time: { ampm: string, hour: string, minutes: string };
-  homeIcon: string;
-  current: Current;
-  forecast1: Forecast;
-  forecast2: Forecast;
-  history: History;
-  thermostat: Thermostat;
+export class WeatherPage extends RodeoPage<Current> {
+  pageName = "Weather";
+  segment = 'current';
+  thermostat: Thermostat;// = new Thermostat();
+  current: Current = new Current();
+  forecast1: Forecast = new Forecast();
+  forecast2: Forecast = new Forecast();
+  history: History = new History();
   times: Times = new Times();
 
-  constructor(private weather: WeatherProvider, private therm: ThermProvider, private timing: TimesProvider) {
-    let date = new Date();
-
-    this.time = {
-      ampm: (date.getHours() >= 12 ? 'pm' : 'am'),
-      hour: (date.getHours() > 12 ? date.getHours() - 12 : (date.getHours() == 0 ? '12' : date.getHours())).toString(),
-      minutes: date.getMinutes().toString().replace(/^(.)$/, '0$1')
-    }
+  constructor(public currentProvider: CurrentWeatherProvider, 
+    public forecast1Provider: Forecast1Provider, 
+    public forecast2Provider: Forecast2Provider, 
+    public historicalProvider: HistoricalWeatherProvider,
+    public thermProvider: ThermProvider, 
+    public timesProvider: TimesProvider) {
+      super(currentProvider, thermProvider);
   }
 
-  refreshState(){
-    this.weather.refresh();
-    this.therm.refresh();
+  canDisplay(){
+    return super.canDisplay() && this.thermostat !== undefined;
   }
 
   image(cond: string){
+    if (!cond) return '';
     return `https://mozzarelly.com/weathericons/${cond}.png`;
   }
 
   turnOnTherm(){
-    this.therm.turnOnTherm();
+    this.thermProvider.turnOnTherm();
   }
 
   dir(forecast: Forecast){
@@ -56,7 +55,10 @@ export class WeatherPage implements OnInit {
   }
 
   insideState(){
-    if (this.thermostat.state == 'cooling')
+    if (!this.thermostat) return '';
+    if (this.thermostat.mode == 'eco')
+      return `⤑${this.thermostat.target}`; // ↛
+    else if (this.thermostat.state == 'cooling')
       return `↓${this.thermostat.target}°`;
     else if (this.thermostat.state == 'heating')
       return `↑${this.thermostat.target}°`;
@@ -66,41 +68,57 @@ export class WeatherPage implements OnInit {
       return `→${this.thermostat.target}°`; 
   }
 
-  loaded(){
-    return this.current && this.forecast1 && this.forecast2;
-  }
-
   sunTime(forecast: Forecast){
+    if (!this.times || !this.times.times) {
+      console.log(`no times`)
+      return '';
+    }
+
     if (forecast.night){
-      return `Sunset at ${this.times.sunset}.`;
+      return `Sunset at ${this.times.times.sunset}.`;
     }
     else {
-      return `Sunrise at ${this.times.sunrise}.`;
+      return `Sunrise at ${this.times.times.sunrise}.`;
     }
   }
 
-  ngOnInit() {
-    this.weather.currentSubject.subscribe(data => { this.current = data as Current; });
-    this.weather.forecast1Subject.subscribe(data => { this.forecast1 = data as Forecast; });
-    this.weather.forecast2Subject.subscribe(data => { this.forecast2 = data as Forecast; });
-    this.weather.historySubject.subscribe(data => { this.history = data as History; });
+  // refreshState(after = null){
+  //   if (after){
+  //     setTimeout(this.refreshState.bind(this), after * 1000);
+  //   }
+  //   else {
+  //     this.loading = true;
+  //     this.provider.refresh();
+  //     this.forecast1Provider.refresh();
+  //     this.forecast2Provider.refresh();
+  //     this.historicalProvider.refresh();
+  //     this.thermProvider.refresh();
+  //   }
+  // }
 
-    this.therm.subject.subscribe(data => {
-      this.thermostat = data;
-      this.homeIcon = `assets/img/${data.away ? 'homezzz' : 'home'}.png`;
+   onRefresh(){
+    this.current = this.data;
+    this.thermProvider.refresh();
+    this.forecast1Provider.refresh();
+    this.forecast2Provider.refresh();
+    this.historicalProvider.refresh();
+   }
+
+  onInit() {
+    // this.currentProvider.subject.subscribe(data => { this.current = data as Current; });
+    this.thermProvider.subject.subscribe(data => { if (data) this.thermostat = data });
+    this.forecast1Provider.subject.subscribe(data => { if (data) this.forecast1 = data as Forecast; });
+    this.forecast2Provider.subject.subscribe(data => { if (data) this.forecast2 = data as Forecast; });
+    this.historicalProvider.subject.subscribe(data => { if (data) this.history = data as History; });
+    this.timesProvider.subject.subscribe(data => {
+      if (this.data){
+        this.times = data as Times;
+        if (this.times && this.times.times){
+          this.times.times.sunrise = this.times.times.sunrise ? this.times.times.sunrise.replace(/^.*, /, '') : '';
+          this.times.times.sunset = this.times.times.sunset ? this.times.times.sunset.replace(/^.*, /, '') : '';
+        }
+      }
     });
-
-    this.timing.subject.subscribe(data => {
-      this.times = data as Times;
-      this.times.sunrise = this.times && this.times.sunrise ? this.times.sunrise.replace(/^.*, /, '') : '';
-      this.times.sunset = this.times && this.times.sunset ? this.times.sunset.replace(/^.*, /, '') : '';
-    });
-
-
-  }
-
-  ionSelected(){
-    this.refreshState();
   }
 
 }

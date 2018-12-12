@@ -9,6 +9,15 @@ export class Alarm {
     time: string; // Time the system is listening for today
     times: string[]; // The whole week
     enabled: boolean[];
+    lastTriggered: {
+        day: string,
+        time: string
+    };
+    override: {
+        days: number;
+        time: string;
+        disable: boolean;
+    }
  
     /* 
       { 

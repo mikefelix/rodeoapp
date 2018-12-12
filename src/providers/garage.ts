@@ -1,48 +1,34 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/mergeMap'
-import 'rxjs/add/operator/catch'
-import 'rxjs/add/observable/throw'
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Garage } from '../models/Garage';
+import { Provider } from './provider';
 
 @Injectable()
-export class GarageProvider {
-  private stateUrl = 'https://mozzarelly.com/home/state/garage';
-  private openUrl = 'https://mozzarelly.com/home/openTIME?auth=Gd9kkwtTv7BW2p0Fg';
-  private closeUrl = 'https://mozzarelly.com/home/close?auth=Gd9kkwtTv7BW2p0Fg';
+export class GarageProvider extends Provider<Garage> {
+  dataTypeName = "garage";
+  defaultValue = new Garage();
+
+  urls = {
+    state: 'https://mozzarelly.com/home/state/garagedoor',
+    open: 'https://mozzarelly.com/home/openTIME?auth=%auth%',
+    close: 'https://mozzarelly.com/home/close?auth=%auth%'
+  }
 
   openMins = 5;
   
-  subject = new BehaviorSubject<Garage>(new Garage());
-
-  constructor(private http: HttpClient){
-    this.refresh();
+  constructor(public http: HttpClient){
+    super(http);
   }
 
-  openGarage(time): void {
+  openGarage(time) {
     if (!time) time = this.openMins;
     if (time > 30) time = '';
-
-    let url = this.openUrl.replace('TIME', time);
-    this.http.post(url, '')
-      .map(this.refresh.bind(this))
-      .catch(this.handleError)
-      .subscribe();
+    this.post('open', { time })
   }
 
-  closeGarage(): void {
-    this.http.post(this.closeUrl, '')
-      .map(this.refresh.bind(this))
-      .catch(this.handleError)
-      .subscribe();
-  }
-
-  refresh() {
-    this.http.get(this.stateUrl)
-      .catch(this.handleError)
-      .subscribe(data => this.subject.next(data as Garage));
+  closeGarage() {
+    this.post('close', {});
   }
 
   handleError(error: Response | any){

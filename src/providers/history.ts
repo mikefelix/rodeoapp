@@ -1,32 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable, BehaviorSubject } from 'rxjs';
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/mergeMap'
 import 'rxjs/add/operator/catch'
-import { BehaviorSubject } from 'rxjs';
+import 'rxjs/add/observable/throw'
 
 @Injectable()
-export class SchedulesProvider {  
-  private url = 'https://mozzarelly.com/home/state/schedules';
+export class HistoryProvider {
+  private url = 'https://mozzarelly.com/home/history';
 
-  subject = new BehaviorSubject<{}>({});
-  
-  constructor(public http: HttpClient) { 
+  subject = new BehaviorSubject<string>("");
+
+  constructor(private http: HttpClient){
     this.refresh();
   }
 
   refresh() {
     this.http.get(this.url)
       .catch(this.handleError)
-      .subscribe(data => this.subject.next(data));
+      .subscribe(data => {
+        this.subject.next(data);
+      });
   }
 
   handleError(error: Response | any){
-    console.error('SchedulesProvider', error);
+    console.error('HistoryProvider error:');
     if (typeof error == 'object')
       console.log(JSON.stringify(error));
-    
+    else
+      console.log(error);
+
     return Observable.throw(error);
   }
 

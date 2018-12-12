@@ -2,122 +2,128 @@
     <ion-navbar>
         <ion-title>
             <img [src]="homeIcon" />
-            <span style="margin-left:10px">Alarm</span>
+            <span style="margin-left:10px">{{pageName}}</span>
         </ion-title>
         <ion-buttons start>
             <button ion-button icon-only (click)="refreshState()">
-                <ion-icon name="refresh"></ion-icon>
+                <ion-icon name="refresh" [ngStyle]="refreshStyle()"></ion-icon>
             </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 
 <ion-content>
-    <div *ngIf="!loaded" style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em">
+    <div *ngIf="errorMessage">{{errorMessage}}</div>
+    <div *ngIf="!canDisplay()" style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em">
         Loading...
     </div>
-    <div *ngIf="loaded">    
+    <div *ngIf="canDisplay()">
+
         <div padding>{{alarmText()}}</div>
         <div *ngIf="errorMessage">{{errorMessage}}</div>
-
-        <ion-segment [(ngModel)]="setting">
-            <ion-segment-button value="enabled">Power</ion-segment-button>
+        
+        <ion-segment [(ngModel)]="segment">
             <ion-segment-button value="time">Setting</ion-segment-button>
+            <ion-segment-button value="enabled">Power</ion-segment-button>
             <ion-segment-button value="sleep">Override</ion-segment-button>
         </ion-segment>
-
-        <div [ngSwitch]="setting">                
+        
+        <div [ngSwitch]="segment">                
             <ion-list *ngSwitchCase="'enabled'">
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="font-style:italic">Weekdays</ion-label>
                     <ion-toggle [(ngModel)]="weekdaysEnabled" (ionChange)="toggleEnabled(-2)"></ion-toggle>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="font-style:italic">Weekends</ion-label>
                     <ion-toggle [(ngModel)]="weekendsEnabled" (ionChange)="toggleEnabled(-1)"></ion-toggle>
                 </ion-item>
-                <ion-item style="border-top:1px solid black">
+                <ion-item *ngIf="canEdit()" style="border-top:1px solid black">
                     <ion-label>Sunday</ion-label>
-                    <ion-toggle [(ngModel)]="alarm.enabled[0]" (ionChange)="toggleEnabled(0)"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.enabled[0]" (ionChange)="toggleEnabled(0)"></ion-toggle>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label>Monday</ion-label>
-                    <ion-toggle [(ngModel)]="alarm.enabled[1]" (ionChange)="toggleEnabled(1)"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.enabled[1]" (ionChange)="toggleEnabled(1)"></ion-toggle>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label>Tuesday</ion-label>
-                    <ion-toggle [(ngModel)]="alarm.enabled[2]" (ionChange)="toggleEnabled(2)"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.enabled[2]" (ionChange)="toggleEnabled(2)"></ion-toggle>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label>Wednesday</ion-label>
-                    <ion-toggle [(ngModel)]="alarm.enabled[3]" (ionChange)="toggleEnabled(3)"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.enabled[3]" (ionChange)="toggleEnabled(3)"></ion-toggle>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label>Thursday</ion-label>
-                    <ion-toggle [(ngModel)]="alarm.enabled[4]" (ionChange)="toggleEnabled(4)"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.enabled[4]" (ionChange)="toggleEnabled(4)"></ion-toggle>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label>Friday</ion-label>
-                    <ion-toggle [(ngModel)]="alarm.enabled[5]" (ionChange)="toggleEnabled(5)"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.enabled[5]" (ionChange)="toggleEnabled(5)"></ion-toggle>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label>Saturday</ion-label>
-                    <ion-toggle [(ngModel)]="alarm.enabled[6]" (ionChange)="toggleEnabled(6)"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.enabled[6]" (ionChange)="toggleEnabled(6)"></ion-toggle>
                 </ion-item>
             </ion-list>
-
+            
             <ion-list *ngSwitchCase="'time'">
-                <ion-item>
+                <ion-item *ngIf="!canEdit()">Editing currently not allowed.</ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black;font-style:italic">Weekdays</ion-label>
                     <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="weekdayTime" (ionChange)="changeTime(-2)"></ion-datetime>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black;font-style:italic">Weekends</ion-label>
                     <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="weekendTime" (ionChange)="changeTime(-1)"></ion-datetime>
                 </ion-item>
-                <ion-item style="border-top:1px solid black">
+                <ion-item *ngIf="canEdit()" style="border-top:1px solid black">
                     <ion-label style="color:black">Sunday</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[0]" (ionChange)="changeTime(0)"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="data.times[0]" (ionChange)="changeTime(0)"></ion-datetime>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black">Monday</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[1]" (ionChange)="changeTime(1)"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="data.times[1]" (ionChange)="changeTime(1)"></ion-datetime>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black">Tuesday</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[2]" (ionChange)="changeTime(2)"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="data.times[2]" (ionChange)="changeTime(2)"></ion-datetime>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black">Wednesday</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[3]" (ionChange)="changeTime(3)"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="data.times[3]" (ionChange)="changeTime(3)"></ion-datetime>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black">Thursday</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[4]" (ionChange)="changeTime(4)"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="data.times[4]" (ionChange)="changeTime(4)"></ion-datetime>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black">Friday</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[5]" (ionChange)="changeTime(5)"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="data.times[5]" (ionChange)="changeTime(5)"></ion-datetime>
                 </ion-item>
-                <ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black">Saturday</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.times[6]" (ionChange)="changeTime(6)"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="data.times[6]" (ionChange)="changeTime(6)"></ion-datetime>
                 </ion-item>
             </ion-list>            
-
+            
             <ion-list *ngSwitchCase="'sleep'">
-                <ion-item>
+                <ion-item *ngIf="!canEdit()">Currently not allowed.</ion-item>
+                <ion-item *ngIf="canEdit()">
                     <ion-label style="color:black">Override next alarm</ion-label>
-                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="alarm.time" (ionChange)="override()"></ion-datetime>
+                    <ion-datetime full large displayFormat="HH:mm" [(ngModel)]="overrideTime" (ionChange)="override()"></ion-datetime>
+                </ion-item>
+                <ion-item *ngIf="canEdit()">
+                    <ion-label style="color:black">Disable for days</ion-label>
+                    <ion-datetime displayFormat="m" minuteValues="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14" [(ngModel)]="sleepTime" (ionChange)="sleep()"></ion-datetime>
                 </ion-item>
                 <ion-item style="border-top:1px solid black">
-                    <ion-label style="color:black">Disable alarms for {{sleepDays}} days.</ion-label>
-                    <ion-range snaps="true" step="1" min="0" max="14" [(ngModel)]="sleepDays" (ionChange)="sleep()">
-                        <ion-label range-left>0</ion-label>
-                        <ion-label range-right>14</ion-label>
-                    </ion-range>
+                    <ion-label style="color:black">Last ring time</ion-label>
+                    <div item-content>{{historyText()}}</div>    
                 </ion-item>
             </ion-list>
         </div>
+
     </div>
 </ion-content>

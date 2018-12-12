@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      <img [src]="homeIcon" />
+      <span style="margin-left:10px">{{pageName}}</span>
+    </ion-title>
+    <ion-buttons start>
+      <button ion-button icon-only (click)="refreshState()">
+        <ion-icon name="refresh" [ngStyle]="refreshStyle()"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="errorMessage">{{errorMessage}}</div>
+  <div *ngIf="!canDisplay()" style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em">
+    Loading...
+  </div>
+  <div *ngIf="canDisplay()">
+    
+    <ion-list padding>
+      <ion-item><ion-label>Mode</ion-label><div item-content>{{fullMode()}}</div></ion-item>
+      <ion-item><ion-label>State</ion-label><div item-content>{{data.state}}</div></ion-item>
+      <ion-item><ion-label>Beer temp</ion-label><div item-content>{{data.beerTemp}}</div></ion-item>
+      <ion-item><ion-label>Fridge temp</ion-label><div item-content>{{data.fridgeTemp}}</div></ion-item>
+    </ion-list>
+    
+    <ion-segment [(ngModel)]="segment">
+      <ion-segment-button value="beer">Set beer</ion-segment-button>
+      <ion-segment-button value="fridge">Set fridge</ion-segment-button>
+      <ion-segment-button value="profile">Profile</ion-segment-button>
+    </ion-segment>
+    
+    <div [ngSwitch]="segment">  
+      <ion-list *ngSwitchCase="'beer'">
+        <ion-item padding><ion-label><ion-icon name="beer"></ion-icon> Setting</ion-label><div item-content>{{newSetting}}</div></ion-item>
+        <ion-item>
+          <ion-range snaps="true" step="1" min="32" max="80" [(ngModel)]="newSetting">
+            <ion-label range-left>32</ion-label>
+            <ion-label range-right>80</ion-label>
+          </ion-range>
+        </ion-item>
+        <ion-item>
+          <button ion-button full large (click)="setBeer()">Change setting</button>
+        </ion-item>
+      </ion-list>
+      
+      <ion-list *ngSwitchCase="'fridge'">
+        <ion-item padding><ion-label><ion-icon name="snow"></ion-icon> Setting</ion-label><div item-content>{{newSetting}}</div></ion-item>
+        <ion-item>
+          <ion-range snaps="true" step="1" min="32" max="80" [(ngModel)]="newSetting">
+            <ion-label range-left>32</ion-label>
+            <ion-label range-right>80</ion-label>
+          </ion-range>
+        </ion-item>
+        <ion-item>
+          <ion-label>Drift to temp</ion-label>
+          <ion-toggle [ngModel]="drift"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <button ion-button full large (click)="setFridge()">Change setting</button>
+        </ion-item>
+      </ion-list>
+      
+      <ion-list *ngSwitchCase="'profile'">
+      </ion-list>
+      
+    </div>
+  
+  </div>
+
+</ion-content>

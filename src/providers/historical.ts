@@ -5,14 +5,12 @@ import 'rxjs/add/operator/mergeMap'
 import 'rxjs/add/operator/catch'
 import { History } from '../models/History';
 import { Provider } from './provider';
-import { Current } from '../models/Current';
-import { Forecast } from '../models/Forecast';
 
 @Injectable()
-export class WeatherProvider extends Provider<Current>{  
-  dataTypeName = 'weather';
-  defaultValue = new Current();
-  urls = {state: 'https://mozzarelly.com/weather/current'};
+export class HistoricalWeatherProvider extends Provider<History>{  
+  dataTypeName = 'historical';
+  defaultValue = new History();
+  urls = {state: 'https://mozzarelly.com/weather/historical'};
 
   constructor(public http: HttpClient) {
     super(http);

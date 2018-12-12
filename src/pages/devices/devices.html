@@ -2,7 +2,7 @@
     <ion-navbar>
         <ion-title>
             <img [src]="homeIcon" />
-            <span style="margin-left:10px">Lights</span>
+            <span style="margin-left:10px">{{pageName}}</span>
         </ion-title>
         <ion-buttons start>
             <button ion-button icon-only (click)="refreshState()">
@@ -14,15 +14,17 @@
 
 <ion-content>
     <div *ngIf="errorMessage">{{errorMessage}}</div>
-    <div *ngIf="!loaded" style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em">
+    <div *ngIf="!canDisplay()" style="text-align:center;margin-top:50px;text-decoration:uppercase;font-size:1.4em">
         Loading...
     </div>
-    <div *ngIf="loaded">
+    <div *ngIf="canDisplay()">
+
         <ion-list>
             <ion-item *ngFor="let bulb of bulbNames()">
-                <ion-label (click)="info(bulb)">{{cap(bulb)}}</ion-label>
-                <ion-toggle [ngModel]="bulbs[bulb].on" (ngModelChange)="toggle(bulb, $event)"></ion-toggle>
+                <ion-label (click)="info(bulb)" [ngStyle]="labelStyle(bulb)">{{cap(bulb)}}</ion-label>
+                <ion-toggle [ngModel]="data[bulb].on" (ngModelChange)="toggle(bulb, $event)"></ion-toggle>
             </ion-item>
         </ion-list>
+
     </div>
 </ion-content>

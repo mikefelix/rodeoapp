@@ -7,40 +7,29 @@ import 'rxjs/add/operator/catch'
 import 'rxjs/add/observable/throw'
 import 'rxjs/add/operator/toPromise';
 import { Alarm } from '../models/Alarm';
+import { Provider } from './provider';
 
 @Injectable()
-export class AlarmProvider {
-  private getUrl = 'https://mozzarelly.com/home/state/alarm';
-  private postUrl = 'https://mozzarelly.com/home/alarm/DAYS/TIME?auth=Gd9kkwtTv7BW2p0Fg';
-  private toggleUrl = 'https://mozzarelly.com/home/alarm/DAYS/STATE?auth=Gd9kkwtTv7BW2p0Fg';
-  private sleepUrl = 'https://mozzarelly.com/home/alarm/DAYS/sleep?auth=Gd9kkwtTv7BW2p0Fg';
-  private overrideUrl = 'https://mozzarelly.com/home/alarm/t1/TIME?auth=Gd9kkwtTv7BW2p0Fg';
+export class AlarmProvider extends Provider<Alarm> {
+  dataTypeName = 'alarm';
+  defaultValue = new Alarm("06:00");
+
+  urls = {
+    state: 'https://mozzarelly.com/home/state/alarm',
+    time: 'https://mozzarelly.com/home/alarm/DAYS/TIME?auth=%auth%',
+    toggle: 'https://mozzarelly.com/home/alarm/DAYS/STATE?auth=%auth%',
+    sleep: 'https://mozzarelly.com/home/alarm/tDAYS/off?auth=%auth%',
+    override: 'https://mozzarelly.com/home/alarm/t1/TIME?auth=%auth%'
+  }
 
   subject = new BehaviorSubject<Alarm>(null);
 
-  constructor(private http: HttpClient){
-    this.refresh();
-  }
-
-  refresh() {
-    this.http.get(this.getUrl)
-      .catch(this.handleError)
-      .subscribe(data => {
-        console.log(JSON.stringify(data));
-        this.subject.next(data);
-      });
-  }
-
-  handleError(error: Response | any){
-    console.error('AlarmProvider error:');
-    if (typeof error == 'object')
-      console.log(JSON.stringify(error));
-
-    return Observable.throw(error);
+  constructor(public http: HttpClient){
+    super(http);
   }
 
   changeTime(day, time){
-    return this.http.post(this.postUrl.replace(/TIME/, time).replace(/DAYS/, day), '')
+    return this.http.post(this.urls.time.replace(/TIME/, time).replace(/DAYS/, day), '')
              .toPromise()
              .then((a) => {
                console.log('refresh from change. ' + a)
@@ -50,7 +39,7 @@ export class AlarmProvider {
   }
 
   power(day, state){
-    return this.http.post(this.toggleUrl.replace(/STATE/, state ? 'on' : 'off').replace(/DAYS/, day), '')
+    return this.http.post(this.urls.toggle.replace(/STATE/, state ? 'on' : 'off').replace(/DAYS/, day), '')
              .catch(this.handleError)
              .subscribe(() => {
                 console.log('refresh from power')
@@ -58,8 +47,8 @@ export class AlarmProvider {
              });
   }
 
-  sleep(days){
-    return this.http.post(this.sleepUrl.replace(/DAYS/, days), '')
+  sleep(days: number){
+    return this.http.post(this.urls.sleep.replace(/DAYS/, days + ""), '')
              .catch(this.handleError)
              .subscribe(() => {
                 console.log('refresh from sleep')
@@ -69,7 +58,7 @@ export class AlarmProvider {
 
   override(time: string) {
     console.log(`override next alarm to ${time}`);
-    return this.http.post(this.overrideUrl.replace(/TIME/, time), '')
+    return this.http.post(this.urls.override.replace(/TIME/, time), '')
              .catch(this.handleError)
              .subscribe(() => {
                 console.log('refresh from override')

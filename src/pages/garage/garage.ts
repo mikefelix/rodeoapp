@@ -1,62 +1,39 @@
 import { Component, OnInit } from '@angular/core';
-import { HouseState } from "../../models/HouseState";
-import { House } from "../../providers/house";
 import { AlertController, IonicPage } from 'ionic-angular';
 import { Garage } from '../../models/Garage';
-import { Times } from '../../models/Times';
 import { GarageProvider } from '../../providers/garage';
 import { ThermProvider } from '../../providers/therm';
+import { RodeoPage } from '../rodeoPage';
 
 @IonicPage()
 @Component({
   selector: 'page-garage',
   templateUrl: 'garage.html'
 })
-export class GaragePage implements OnInit {
-  garage = new Garage();
-  loading: boolean;
-  errorMessage: string;
+export class GaragePage extends RodeoPage<Garage> {
+  pageName = "Garage";
   openMins = 5;
-  homeIcon: string;
 
-  private snapUrl = 'https://mozzarelly.com/video?user=mozzarelly&pwd=4h1K4o7pPoZ2&rnd=' + (new Date().getTime());
-  // private snapUrl = 'https://mozzarelly.com/snap?user=mozzarelly&pwd=4h1K4o7pPoZ2&rnd=' + (new Date().getTime());
+  snapUrl = 'https://mozzarelly.com/video?user=mozzarelly&pwd=4h1K4o7pPoZ2&rnd=' + (new Date().getTime());
 
-  constructor(public garageDoor: GarageProvider, public therm: ThermProvider, public alertCtrl: AlertController) {
+  constructor(public provider: GarageProvider, public thermProvider: ThermProvider, public alertCtrl: AlertController) {
+    super(provider, thermProvider);
   }
 
-  ngOnInit() {
-    this.garageDoor.subject.subscribe(garage => {
-      this.garage = garage;
-      this.loading = false;
-    });
+  onInit(){}
 
-    this.therm.subject.subscribe(therm => this.homeIcon = `assets/img/${therm.away ? 'homezzz' : 'home'}.png`);
-  }
+  onRefresh() {}
 
-  ionSelected(){
-    this.refreshState();
-  }
-
-  refreshStyle(){
-    return {
-      opacity: this.loading ? '0.4' : ''
-    }
-  }
-
-  openGarage(time) {
-    this.loading = true;
-    console.log('open for ' + this.openMins)
-    this.garageDoor.openGarage(this.openMins);
-    this.garage.is_open = true;
-    setTimeout(this.garageDoor.refresh.bind(this.garage), 15000);
+  openGarage() {
+    this.provider.openGarage(this.openMins);
   }
 
   closeGarage() {
-    this.loading = true;
-    this.garageDoor.closeGarage();
-    this.garage.is_open = false;
-    setTimeout(this.garageDoor.refresh.bind(this.garage), 3000);
+    this.provider.closeGarage();
+  }
+
+  online() {
+    return this.data && this.data.is_open !== undefined;
   }
 
   openForText(){
@@ -69,20 +46,23 @@ export class GaragePage implements OnInit {
   }
 
   stateText(){
-    if (!this.garage || this.garage.is_open === undefined) {
+    if (!this.online){
+      return 'The garage is offline.';
+    }
+    else if (!this.data || this.data.is_open === undefined) {
       return 'Connecting...';
     }
     else {
-      let text = 'The garage is ' + (this.garage.is_open ? 'open' : 'closed') + '.';
-/*      if (this.garage.next_close_time && this.garage.current_time){
-        let nextClose = new Date(this.garage.next_close_time).getTime();
-        let current = new Date(this.garage.current_time).getTime();
+      let text = 'The garage is ' + (this.data.is_open ? 'open' : 'closed') + '.';
+/*      if (this.data.next_close_time && this.data.current_time){
+        let nextClose = new Date(this.data.next_close_time).getTime();
+        let current = new Date(this.data.current_time).getTime();
         let timeUntilClose = Math.floor(nextClose - current) / 1000;
         text += ' Closing in ' + timeUntilClose + ' seconds.';
       }
 */
-      if (this.garage.next_close_time){
-        let time = this.garage.next_close_time.replace(/"/, '').replace(/^.*, /, '');
+      if (this.data.next_close_time){
+        let time = this.data.next_close_time.replace(/"/, '').replace(/^.*, /, '');
         text += ` Closing at ${time}.`;
       }
 
@@ -91,15 +71,17 @@ export class GaragePage implements OnInit {
   }
 
   isOpen(){
-    return this.garage && this.garage.is_open;
+    return this.data && this.data.is_open;
   }
 
   info(){
-    let times = `<b>Last opened</b><br/>${this.formatTime(this.garage.last_open_time)}<br/>
-                 <b>Last closed</b><br/>${this.formatTime(this.garage.last_close_time)}<br/>`;
+    if (!this.data) return "";
+
+    let times = `<b>Last opened</b><br/>${this.formatTime(this.data.last_open_time)}<br/>
+                 <b>Last closed</b><br/>${this.formatTime(this.data.last_close_time)}<br/>`;
                  
-    if (this.garage.next_close_time)
-      times += `<b>Next close</b>${this.formatTime(this.garage.next_close_time)}<br/>`;
+    if (this.data.next_close_time)
+      times += `<b>Next close</b>${this.formatTime(this.data.next_close_time)}<br/>`;
 
     let alert = this.alertCtrl.create({
       title: 'Garage',
@@ -111,31 +93,7 @@ export class GaragePage implements OnInit {
   }
 
   formatTime(time){
-    /*var date = ('' + new Date(time)).replace(/ ?GMT-.... \(...\) ?/,'am')
-      .replace(/(\w{3} \w{3} \d{2}) \d{4}/, '$1,')
-      .replace(/13:(..:..)am/, "1:$1pm")
-      .replace(/14:(..:..)am/, "2:$1pm")
-      .replace(/15:(..:..)am/, "3:$1pm")
-      .replace(/16:(..:..)am/, "4:$1pm")
-      .replace(/17:(..:..)am/, "5:$1pm")
-      .replace(/18:(..:..)am/, "6:$1pm")
-      .replace(/19:(..:..)am/, "7:$1pm")
-      .replace(/20:(..:..)am/, "8:$1pm")
-      .replace(/21:(..:..)am/, "9:$1pm")
-      .replace(/22:(..:..)am/, "10:$1pm")
-      .replace(/23:(..:..)am/, "11:$1pm")
-      .replace(/00:(..:..)am/, "12:$1am");
-    return date;*/
     return time;
   }
 
-  refreshSnapUrl(){
-    this.snapUrl = this.snapUrl.replace(/rnd=.+/, 'rnd=' + (new Date().getTime()));
-  }
-
-  refreshState(){
-    this.refreshSnapUrl();
-    this.garageDoor.refresh();
-    this.therm.refresh();
-  }
 }
