@@ -19,7 +19,7 @@ export class BeerProvider extends Provider<Beer>{
   
   urls = {
     state: 'https://mozzarelly.com/home/state/beer',
-    set: 'https://mozzarelly.com/home/beer/DRIFTSET/TEMP?auth=%auth%'
+    set: 'https://mozzarelly.com/home/beer/DRIFTSET/TEMP?auth=Gd9kkwtTv7BW2p0Fg'
   }
 
   set(setting: string, temp: string, drift = false){

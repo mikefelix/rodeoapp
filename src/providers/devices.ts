@@ -14,11 +14,11 @@ export class DevicesProvider extends Provider<Devices>{
 
   urls = {
     state:            'https://mozzarelly.com/home/state/lights',
-    revertOverride:   'https://mozzarelly.com/home/devices/DEVICE/revert?auth=%auth%',
-    lightOn:          'https://mozzarelly.com/home/devices/DEVICE/on?auth=%auth%',
-    forceLightOn:     'https://mozzarelly.com/home/devices/DEVICE/forceon?auth=%auth%',
-    lightOff:         'https://mozzarelly.com/home/devices/DEVICE/off?auth=%auth%',
-    forceLightOff:    'https://mozzarelly.com/home/devices/DEVICE/forceoff?auth=%auth%'
+    revertOverride:   'https://mozzarelly.com/home/devices/DEVICE/revert?auth=Gd9kkwtTv7BW2p0Fg',
+    lightOn:          'https://mozzarelly.com/home/devices/DEVICE/on?auth=Gd9kkwtTv7BW2p0Fg',
+    forceLightOn:     'https://mozzarelly.com/home/devices/DEVICE/forceon?auth=Gd9kkwtTv7BW2p0Fg',
+    lightOff:         'https://mozzarelly.com/home/devices/DEVICE/off?auth=Gd9kkwtTv7BW2p0Fg',
+    forceLightOff:    'https://mozzarelly.com/home/devices/DEVICE/forceoff?auth=Gd9kkwtTv7BW2p0Fg'
   }
 
   defaultValue = new Devices();

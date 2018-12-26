@@ -11,7 +11,8 @@ export class Alarm {
     enabled: boolean[];
     lastTriggered: {
         day: string,
-        time: string
+        time: string,
+        action: string
     };
     override: {
         days: number;

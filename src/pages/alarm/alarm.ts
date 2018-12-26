@@ -31,7 +31,7 @@ export class AlarmPage extends RodeoPage<Alarm> {
     if (!this.data) return "";    
     if (!this.data.lastTriggered) return "none";
     console.log(this.data.lastTriggered.day)
-    return `${this.data.lastTriggered.day.substring(4, 6)}/${this.data.lastTriggered.day.substring(6, 8)} ${this.data.lastTriggered.time}`;
+    return `${this.data.lastTriggered.day.substring(4, 6)}/${this.data.lastTriggered.day.substring(6, 8)} ${this.data.lastTriggered.time} (${this.data.lastTriggered.action})`;
   }
 
   alarmText(){

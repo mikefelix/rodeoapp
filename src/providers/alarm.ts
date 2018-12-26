@@ -16,10 +16,10 @@ export class AlarmProvider extends Provider<Alarm> {
 
   urls = {
     state: 'https://mozzarelly.com/home/state/alarm',
-    time: 'https://mozzarelly.com/home/alarm/DAYS/TIME?auth=%auth%',
-    toggle: 'https://mozzarelly.com/home/alarm/DAYS/STATE?auth=%auth%',
-    sleep: 'https://mozzarelly.com/home/alarm/tDAYS/off?auth=%auth%',
-    override: 'https://mozzarelly.com/home/alarm/t1/TIME?auth=%auth%'
+    time: 'https://mozzarelly.com/home/alarm/DAYS/TIME?auth=Gd9kkwtTv7BW2p0Fg',
+    toggle: 'https://mozzarelly.com/home/alarm/DAYS/STATE?auth=Gd9kkwtTv7BW2p0Fg',
+    sleep: 'https://mozzarelly.com/home/alarm/tDAYS/off?auth=Gd9kkwtTv7BW2p0Fg',
+    override: 'https://mozzarelly.com/home/alarm/t1/TIME?auth=Gd9kkwtTv7BW2p0Fg'
   }
 
   subject = new BehaviorSubject<Alarm>(null);

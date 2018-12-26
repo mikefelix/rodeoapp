@@ -11,8 +11,8 @@ export class GarageProvider extends Provider<Garage> {
 
   urls = {
     state: 'https://mozzarelly.com/home/state/garagedoor',
-    open: 'https://mozzarelly.com/home/openTIME?auth=%auth%',
-    close: 'https://mozzarelly.com/home/close?auth=%auth%'
+    open: 'https://mozzarelly.com/home/openTIME?auth=Gd9kkwtTv7BW2p0Fg',
+    close: 'https://mozzarelly.com/home/close?auth=Gd9kkwtTv7BW2p0Fg'
   }
 
   openMins = 5;
